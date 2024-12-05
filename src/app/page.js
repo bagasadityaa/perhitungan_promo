@@ -52,7 +52,7 @@ const PromoCalculation = () => {
         const adminFeePercentage = 0.2; // Biaya admin Gojek 20%
         // Harga bersih yang diterima setelah mengurangi subsidi dan biaya admin
         const netEarnings = basePrice - restoSubsidy;
-        const nett = netEarnings - 0.2;
+        const nett = (basePrice - restoSubsidy) * 0.2;
   
         return {
           minOrder: formatRupiah(minOrder),
