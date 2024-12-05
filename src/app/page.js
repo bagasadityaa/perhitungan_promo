@@ -43,34 +43,41 @@ const PromoCalculation = () => {
     }).format(value);
   };
 
-  const calculatePromo = () => {
-    const promoResults = promotions.map(({ sensitivity, tiers }) => {
-      const calculatedTiers = tiers.map(({ minOrder, discount, maxDisc }) => {
-        const actualDiscount = Math.min(basePrice * discount, maxDisc);
-        const restoSubsidy = actualDiscount * subsidyResto;
-        const gojekSubsidy = actualDiscount * subsidyGojek;
-        const adminFeePercentage = 0.2; // Biaya admin Gojek 20%
-        // Harga bersih yang diterima setelah mengurangi subsidi dan biaya admin
-        const netEarnings = basePrice - restoSubsidy;
-        const nett = (basePrice - restoSubsidy) * 0.2;
-  
-        return {
-          minOrder: formatRupiah(minOrder),
-          discount: `${(discount * 100).toFixed(0)}%`,
-          maxDisc: formatRupiah(maxDisc),
-          restoSubsidy: formatRupiah(restoSubsidy),
-          gojekSubsidy: formatRupiah(gojekSubsidy),
-          
-        
-          nett: formatRupiah(nett),
-        };
-      });
-  
-      return { sensitivity, calculatedTiers };
+  const adminFeePercentage = 0.2; // Biaya admin Gojek 20%
+
+const calculatePromo = () => {
+  const promoResults = promotions.map(({ sensitivity, tiers }) => {
+    const calculatedTiers = tiers.map(({ minOrder, discount, maxDisc }) => {
+      // Hitung diskon aktual
+      const actualDiscount = Math.min(basePrice * discount, maxDisc);
+
+      // Hitung subsidi restoran dan Gojek
+      const restoSubsidy = actualDiscount * subsidyResto;
+      const gojekSubsidy = actualDiscount * subsidyGojek;
+
+      // Hitung biaya admin
+      const adminFee = (basePrice - restoSubsidy) * adminFeePercentage;
+
+      // Harga bersih yang diterima
+      const nett = basePrice - restoSubsidy - adminFee;
+
+      return {
+        minOrder: formatRupiah(minOrder),
+        discount: `${(discount * 100).toFixed(0)}%`,
+        maxDisc: formatRupiah(maxDisc),
+        restoSubsidy: formatRupiah(restoSubsidy),
+        gojekSubsidy: formatRupiah(gojekSubsidy),
+        adminFee: formatRupiah(adminFee),
+        nett: formatRupiah(nett),
+      };
     });
-  
-    setResults(promoResults);
-  };
+
+    return { sensitivity, calculatedTiers };
+  });
+
+  setResults(promoResults);
+};
+
   
 
   return (
